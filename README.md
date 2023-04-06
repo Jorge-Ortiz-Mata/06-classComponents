@@ -130,3 +130,59 @@ export class UsersClass extends Component {
   }
 }
 ```
+
+
+### useContenxt with Class Components
+
+Similar with Functional Component, we can define global variables to be shared between components. We can onlyhave one static context for each class component. We need to use the key **static contextType** to get access to the UsersContext.
+
+* users-context.js
+```javascript
+import React from "react"
+
+const UsersContext = React.createContext({
+  users: [
+    {id: 1, name: 'Jorge', age: 34},
+    {id: 2, name: 'Juan', age: 23},
+    {id: 3, name: 'Omar', age: 18},
+    {id: 4, name: 'Ana', age: 28}
+  ]
+});
+
+export default UsersContext;
+```
+
+* App.jsx
+```javascript
+import './App.css';
+import { Users, UsersClass } from './components/Users';
+import UsersContext from './store/users-context';
+import { useContext } from 'react';
+
+function App() {
+  const userCtx = useContext(UsersContext);
+
+  return (
+    <UsersContext.Provider value={{users: userCtx.users}}>
+      <UsersClass />
+    </UsersContext.Provider>
+  );
+}
+
+export default App;
+```
+
+* Users.jsx
+```javascript
+export class UsersClass extends Component {
+  ....
+  static contextType = UsersContext
+  ....
+
+  ....
+  componentDidMount(){ // This is the equivalent of useEffect without dependencies.
+    console.log('It is executed only once, when the component is mounted')
+    this.setState({ filteredUsers: this.context.users })
+  }
+}
+```
