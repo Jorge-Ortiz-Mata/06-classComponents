@@ -1,4 +1,4 @@
-## Class Components
+# Class Components
 ****
 
 This a basic example. Both components are correct and they are equivalent the same. In order to pass "props" in class components, we need to inherit properties from the Component Class from React.
@@ -131,8 +131,8 @@ export class UsersClass extends Component {
 }
 ```
 
-
 ### useContenxt with Class Components
+****
 
 Similar with Functional Component, we can define global variables to be shared between components. We can onlyhave one static context for each class component. We need to use the key **static contextType** to get access to the UsersContext.
 
@@ -185,4 +185,101 @@ export class UsersClass extends Component {
     this.setState({ filteredUsers: this.context.users })
   }
 }
+```
+
+### Error Boundaries with Class Components.
+****
+
+We could also create a ErrorBoundary component in case we want to show the error caused in our application. In this case
+we will use the **componentDidCatch** method to catch and render the error.
+
+* ErrorBoundary.jsx
+```javascript
+import { Component } from 'react';
+
+class ErrorBoundary extends Component {
+  constructor(){
+    super();
+    this.state = { hasError: false }
+  }
+
+  componentDidCatch(error){
+    console.log(error);
+    this.setState({ hasError: true })
+  }
+
+  render (){
+    if(this.state.hasError){
+      return <div>Something went wrong</div>
+    }
+    return this.props.children
+  }
+}
+
+export default ErrorBoundary;
+```
+
+* Users.jsx
+```javascript
+import { Component } from 'react';
+import { UserClassComponent } from './User';
+import UsersContext from '../store/users-context';
+import Demo from './Demo';
+
+// --------------------------------- Class Component --------------------------------
+
+export class UsersClass extends Component {
+  static contextType = UsersContext
+
+  constructor() {
+    super();
+    this.state = {
+      filteredUsers: [],
+      value: ''
+    }
+  }
+
+
+  componentDidUpdate(prevProps, prevState) { // this method is called always this class is re-render, for example, when updating states.
+    if(prevState.value !== this.state.value){
+      this.setState({
+        filteredUsers: this.context.users.filter(user => user.name.includes(this.state.value))
+      });
+    }
+
+    if(this.state.filteredUsers.length < 1){
+      throw new Error('WTF!')
+    }
+  }
+
+  handleChange(e){...}
+
+  render() {
+    return
+  }
+}
+
+```
+
+* App.jsx
+```javascript
+import './App.css';
+import { UsersClass } from './components/Users';
+import UsersContext from './store/users-context';
+import { useContext } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
+
+function App() {
+  const userCtx = useContext(UsersContext);
+
+  return (
+    <UsersContext.Provider value={{users: userCtx.users}}>
+      <ErrorBoundary>
+        <UsersClass />
+      </ErrorBoundary>
+    </UsersContext.Provider>
+  );
+}
+
+export default App;
 ```
