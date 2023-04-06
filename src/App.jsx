@@ -1,14 +1,17 @@
 import './App.css';
-import { Users, UsersClass } from './components/Users';
+import { UsersClass } from './components/Users';
 import UsersContext from './store/users-context';
 import { useContext } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const userCtx = useContext(UsersContext);
 
   return (
     <UsersContext.Provider value={{users: userCtx.users}}>
-      <UsersClass />
+      <ErrorBoundary>
+        <UsersClass />
+      </ErrorBoundary>
     </UsersContext.Provider>
   );
 }
