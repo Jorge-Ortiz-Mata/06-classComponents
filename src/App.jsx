@@ -1,4 +1,5 @@
 import './App.css';
+import Demo from './components/Demo';
 import { UserFunctional, UserClassComponent } from './components/User';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       {
         users.map(user => <UserClassComponent key={user.id} name={user.name} />)
       }
+      <Demo />
     </div>
   );
 }
